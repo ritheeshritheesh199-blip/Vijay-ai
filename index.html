@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vijay AI</title>
+<style>
+:root{--bg:#fff;--panel:#f7f7f8;--text:#171717;--muted:#777;--line:#e5e5e5;--soft:#f0f0f0;--accent:#111;--user:#ececec}
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+.app{height:100%;display:flex}.sidebar{width:280px;background:var(--panel);border-right:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:12px}
+.logo{font-size:25px;font-weight:800;padding:9px 8px 18px}.logo span{font-weight:450;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:11px;padding:11px 13px;cursor:pointer}.btn:hover,.item:hover{background:var(--soft)}
+.history-title{font-size:12px;color:var(--muted);padding:18px 8px 5px}.history{flex:1;overflow:auto}.item{padding:10px;border-radius:9px;font-size:14px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bottom{border-top:1px solid var(--line);padding-top:8px}.bottom .btn{width:100%;border:0;background:transparent;text-align:left}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}.top{height:62px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;font-weight:800}.top small{font-size:12px;color:var(--muted);margin-left:8px;font-weight:500}
+.chat{flex:1;overflow:auto;padding:34px 18px 160px}.welcome{max-width:850px;margin:10vh auto 0;text-align:center}.mark{width:58px;height:58px;border-radius:17px;background:var(--accent);color:#fff;display:grid;place-items:center;margin:0 auto 18px;font-weight:900;font-size:18px}.welcome h1{font-size:42px;margin:0 0 8px}.welcome p{color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:28px;text-align:left}.card{border:1px solid var(--line);padding:15px;border-radius:13px;cursor:pointer}.card:hover{background:var(--panel)}.card b{display:block;margin-bottom:5px}.card span{color:var(--muted);font-size:13px}
+.messages{max-width:850px;margin:auto}.message{display:flex;gap:13px;margin:25px 0;line-height:1.65}.avatar{width:32px;height:32px;min-width:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800}.user .avatar{background:#ddd;color:#222}.bubble{max-width:760px;white-space:pre-wrap}
+.composer-wrap{position:fixed;bottom:0;left:280px;right:0;padding:20px;background:linear-gradient(transparent,var(--bg) 30%)}.composer{max-width:850px;margin:auto;border:1px solid #aaa;border-radius:16px;background:var(--bg);display:flex;align-items:flex-end;padding:8px;box-shadow:0 5px 22px #00000012}.composer textarea{flex:1;border:0;outline:0;resize:none;background:transparent;color:var(--text);padding:10px;font:15px inherit;max-height:140px}.icon,.send{width:40px;height:40px;border:0;border-radius:10px;cursor:pointer;background:transparent;color:var(--muted);font-size:19px}.send{background:var(--accent);color:#fff}.hint{text-align:center;color:#999;font-size:11px;margin-top:7px}
+.typing{display:inline-flex;gap:4px}.typing i{width:6px;height:6px;border-radius:50%;background:#999;animation:b .9s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes b{50%{opacity:.25;transform:translateY(-2px)}}
+.modal{display:none;position:fixed;inset:0;background:#0007;align-items:center;justify-content:center;padding:18px;z-index:9}.modal.show{display:flex}.box{width:min(520px,100%);background:var(--bg);border-radius:18px;padding:24px;position:relative}.close{position:absolute;right:13px;top:8px;border:0;background:none;color:var(--text);font-size:27px;cursor:pointer}.setting{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line)}
+@media(max-width:700px){.sidebar{display:none}.composer-wrap{left:0}.top{padding:0 15px}.welcome h1{font-size:34px}.cards{grid-template-columns:1fr}.chat{padding-left:12px;padding-right:12px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="logo">Vijay <span>AI</span></div>
+  <button class="btn" onclick="newChat()">＋ New chat</button>
+  <div class="history-title">Recent chats</div><div class="history" id="history"></div>
+  <div class="bottom"><button class="btn" onclick="toggleDark()">◐ Appearance</button><button class="btn" onclick="settings()">⚙ Settings</button></div>
+</aside>
+<main class="main">
+<header class="top">Vijay AI <small>AI Assistant</small></header>
+<section class="chat" id="chat">
+<div class="welcome" id="welcome"><div class="mark">VA</div><h1>How can I help?</h1><p>Ask Vijay AI anything in English, தமிழ் or Tanglish.</p>
+<div class="cards">
+<div class="card" onclick="prompt('Explain calculus in simple Tamil')"><b>📚 Study</b><span>Learn a difficult topic simply</span></div>
+<div class="card" onclick="prompt('Give me a college project idea using AI')"><b>💡 Ideas</b><span>Build project ideas</span></div>
+<div class="card" onclick="prompt('Write a professional email for my college')"><b>✍️ Write</b><span>Draft better messages</span></div>
+<div class="card" onclick="prompt('Teach me Python from beginner level')"><b>💻 Code</b><span>Learn programming</span></div>
+</div></div>
+<div class="messages" id="messages"></div>
+</section>
+<div class="composer-wrap"><div class="composer">
+<button class="icon" onclick="file.click()" title="Attach">＋</button><input id="file" type="file" hidden accept=".txt,.pdf,image/*" onchange="uploadFile(this)">
+<textarea id="input" rows="1" placeholder="Message Vijay AI..." onkeydown="key(event)"></textarea>
+<button class="icon" onclick="voice()" title="Voice">🎤</button><button class="send" onclick="send()">➤</button>
+</div><div class="hint">Vijay AI may make mistakes. Check important information.</div></div>
+</main></div>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="box"><button class="close" onclick="closeModal()">×</button><h2 id="mtitle">Settings</h2><div id="mbody"></div></div></div>
+<script>
+const $=id=>document.getElementById(id), input=$('input'), messages=$('messages'), welcome=$('welcome'), history=$('history'), file=$('file');
+let chatLog=JSON.parse(localStorage.getItem('vijay-ai-chats')||'[]');
+function key(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();input.focus()}}
+function prompt(t){input.value=t;input.focus();send()}
+function bubble(text,type){let m=document.createElement('div');m.className='message '+type;m.innerHTML='<div class="avatar">'+(type==='user'?'You':'VA')+'</div><div class="bubble"></div>';m.querySelector('.bubble').textContent=text;messages.appendChild(m);$('chat').scrollTop=1e9;return m}
+function typing(){let m=document.createElement('div');m.className='message ai';m.id='typing';m.innerHTML='<div class="avatar">VA</div><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div>';messages.appendChild(m);$('chat').scrollTop=1e9}
+async function send(){let text=input.value.trim();if(!text)return;welcome.style.display='none';bubble(text,'user');chatLog.push({role:'user',content:text});save();input.value='';typing();
+try{let r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:chatLog})});let d=await r.json();$('typing')?.remove();if(!r.ok)throw Error(d.error);bubble(d.reply,'ai');chatLog.push({role:'assistant',content:d.reply});save()}catch(e){$('typing')?.remove();bubble('⚠️ '+e.message,'ai')}}
+function save(){localStorage.setItem('vijay-ai-chats',JSON.stringify(chatLog.slice(-40)));renderHistory()}
+function renderHistory(){history.innerHTML='';let arr=chatLog.filter(x=>x.role==='user').slice(-12).reverse();arr.forEach(x=>{let d=document.createElement('div');d.className='item';d.textContent=x.content;d.onclick=()=>{input.value=x.content;input.focus()};history.appendChild(d)})}
+function newChat(){chatLog=[];messages.innerHTML='';welcome.style.display='block';save();input.focus()}
+function uploadFile(el){if(!el.files[0])return;let f=el.files[0];welcome.style.display='none';bubble('📎 '+f.name,'user');typing();let fd=new FormData();fd.append('file',f);fetch('/api/analyze-file',{method:'POST',body:fd}).then(async r=>{let d=await r.json();$('typing')?.remove();if(!r.ok)throw Error(d.error);bubble(d.reply,'ai')}).catch(e=>{$('typing')?.remove();bubble('⚠️ '+e.message,'ai')});el.value=''}
+function voice(){let SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return alert('Voice input is not supported in this browser.');let r=new SR();r.lang='en-IN';r.onresult=e=>{input.value=e.results[0][0].transcript;input.focus()};r.start()}
+function toggleDark(){document.body.classList.toggle('dark');localStorage.setItem('vijay-theme',document.body.classList.contains('dark')?'dark':'light')}
+function settings(){$('mtitle').textContent='Vijay AI Settings';$('mbody').innerHTML='<div class="setting"><b>Dark mode</b><input type="checkbox" '+(document.body.classList.contains('dark')?'checked':'')+' onchange="toggleDark()"></div><div class="setting"><b>Local chat history</b><input type="checkbox" checked></div><div class="setting"><b>Language</b><span>English / தமிழ் / Tanglish</span></div><p style="color:var(--muted);font-size:13px">AI model is configured on the server through .env.</p>';$('modal').classList.add('show')}
+function closeModal(){$('modal').classList.remove('show')}
+if(localStorage.getItem('vijay-theme')==='dark')document.body.classList.add('dark');renderHistory()
+</script>
+</body></html>
